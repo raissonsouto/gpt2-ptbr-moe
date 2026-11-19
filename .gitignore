@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+.ipynb_checkpoints/
+
+# Data and checkpoints (too large; hashes go in the README)
+data/*
+!data/README.md
+checkpoints/
+*.pt
+*.pth
+*.safetensors
+
+wandb/

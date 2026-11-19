@@ -1,0 +1,26 @@
+# Base configuration shared by every run (Atividade 1, PPGCC/UFCG).
+model:
+  vocab_size: 16000
+  context_length: 256
+  emb_dim: 256
+  n_heads: 4
+  n_layers: 4
+  drop_rate: 0.1
+  qkv_bias: false
+
+tokenizer: data/tokenizer.json   # 16k BPE reference tokenizer
+
+train:
+  seed: 123
+  epochs: 1                      # ~27M tokens
+  mixed_precision: fp16          # T4 has no native bf16
+  warmup: linear
+  lr_schedule: cosine
+  grad_clip: 1.0
+  eval_every: 0.1                # fraction of training
+  checkpoint_every: 500          # steps
+
+prompts:
+  - "Nos últimos anos,"
+  - "Este trabalho tem como objetivo"
+  - "No contexto brasileiro,"

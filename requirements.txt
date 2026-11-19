@@ -1,0 +1,8 @@
+torch>=2.3
+tokenizers
+tiktoken
+numpy
+pandas
+matplotlib
+pyyaml
+tensorboard
