@@ -1,0 +1,177 @@
+\documentclass[12pt]{article}
+
+\usepackage{sbc-template}
+\usepackage{graphicx,url}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{booktabs}
+\usepackage{amsmath}
+
+\graphicspath{{figuras/}}
+
+\sloppy
+
+\title{O que um Mixture of Experts ganha sobre o modelo denso?\\
+Um estudo com GPT-2 treinado do zero em português}
+
+\author{Raisson Adrian Grangeiro Souto\inst{1}}
+
+\address{Programa de Pós-Graduação em Ciência da Computação (PPGCC)\\
+  Universidade Federal de Campina Grande (UFCG) -- Campina Grande, PB -- Brasil
+  \email{raisson.souto@copin.ufcg.edu.br}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+  % TODO: abstract em inglês (máx. 10 linhas). Escrever por último.
+\end{abstract}
+
+\begin{resumo}
+  % TODO: resumo em português (máx. 10 linhas). Escrever por último.
+\end{resumo}
+
+% Limite: 8 páginas no modelo SBC.
+% Rubrica (Nota B): motivação/hipóteses/relacionados 2,0; desenho
+% experimental 2,5; resultados e análise 3,0; limitações 1,0; escrita 1,5.
+
+\section{Introdução}\label{sec:intro}
+% Contexto: MoE como forma de aumentar parâmetros sem aumentar o custo por
+%   token \cite{shazeer2017moe,fedus2022switch}.
+% Problema: em escala reduzida (~10M parâmetros, ~27M tokens), o ganho do
+%   MoE sobre o denso não é óbvio.
+% Pergunta central: o que um MoE ganha sobre o modelo denso, na mesma
+%   escala e com o mesmo orçamento?
+% Contribuições e organização do artigo.
+
+\section{Hipóteses}\label{sec:hipoteses}
+% Escritas ANTES dos experimentos (exigência da rubrica).
+% H1: MoE com mesmos parâmetros ativos (treino 2) atinge loss de validação
+%     menor que o vanilla com o mesmo orçamento de tokens.
+% H2: MoE com mesmos parâmetros totais (treino 3) fica próximo do vanilla
+%     com menor custo de FFN por token.
+% H3: sem a loss de balanceamento, a utilização dos especialistas colapsa.
+% H4: especialistas se especializam por tipo de token (funcionais, números,
+%     citações, pontuação) mais do que por área (sigla_centro).
+% H5: hipótese da modificação escolhida (treino 4).
+
+\section{Trabalhos Relacionados}\label{sec:relacionados}
+% Citar os artigos originais de cada técnica implementada.
+
+\subsection{Transformers decoder-only}
+% \cite{vaswani2017attention}, \cite{radford2019gpt2}, \cite{raschka2024build}
+
+\subsection{Mixture of Experts}
+% \cite{shazeer2017moe}, \cite{lepikhin2021gshard}, \cite{fedus2022switch},
+% \cite{jiang2024mixtral}, \cite{qwen3}
+
+\subsection{Eficiência de treino}
+% \cite{micikevicius2018mixed}, \cite{dao2022flashattention},
+% \cite{loshchilov2019adamw}
+
+\subsection{Modificação escolhida}
+% Conforme o treino 4: \cite{su2024roformer} (RoPE),
+% \cite{ainslie2023gqa} (GQA), \cite{zhang2019rmsnorm} e
+% \cite{shazeer2020glu} (RMSNorm + SwiGLU).
+
+\section{Metodologia}\label{sec:metodologia}
+
+\subsection{Corpus e tokenização}
+% Introduções de 23.026 trabalhos da UFCG, 11 centros; partição estratificada
+% (treino 20.722 docs / ~27M tokens; validação 1.152 / ~1,6M; teste após o
+% prazo). Tokenizador BPE de 16k de referência \cite{sennrich2016bpe}.
+
+\subsection{Modelo base e treino otimizado}
+% GPT-2 do livro: 4 camadas, 4 cabeças, emb 256, contexto 256, vocab 16k.
+% Loop do Apêndice D: warmup linear, cosine decay, clipping, AdamW.
+% Otimizações: fp16 + GradScaler, SDPA/FlashAttention, AdamW fused,
+% torch.compile. Tab.~\ref{tab:otimizacoes}.
+
+\subsection{Camada MoE}
+% Roteador linear, top-k (8 especialistas, top-2), loss auxiliar de
+% balanceamento estilo Switch \cite{fedus2022switch}:
+% \begin{equation}
+%   \mathcal{L}_{aux} = \alpha \, N \sum_{i=1}^{N} f_i \, P_i
+% \end{equation}
+% Dimensionamento dos treinos 2 (mesmos parâmetros ativos) e 3 (mesmos
+% parâmetros totais). Tab.~\ref{tab:configs}.
+
+\subsection{Protocolo experimental}
+% Mesmo orçamento de tokens, mesmo contexto, mesmo cronograma de LR,
+% semente fixa (123), uma rodada por configuração.
+% Métricas: loss/perplexidade e BPB na validação, parâmetros totais e
+% ativos, tokens/s, memória de pico, tempo de parede, amostras para os 3
+% prompts fixos, utilização dos especialistas. BPB no teste após o prazo.
+% Logs versionados; hash SHA-256 dos checkpoints no README.
+
+\begin{table}[ht]
+\centering
+\caption{Configurações comparadas.}\label{tab:configs}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Treino & Especialistas & Top-$k$ & Parâm.\ totais & Parâm.\ ativos \\
+\midrule
+1 -- Vanilla        & -- & -- & & \\
+2 -- MoE (ativos)   & 8  & 2  & & \\
+3 -- MoE (totais)   & 8  & 2  & & \\
+4 -- Modificação    & -- & -- & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Resultados}\label{sec:resultados}
+
+\subsection{Treino otimizado}
+% Tokens/s e memória de pico antes e depois de cada otimização (~200 passos).
+
+\begin{table}[ht]
+\centering
+\caption{Efeito de cada otimização no throughput e na memória.}\label{tab:otimizacoes}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Configuração & Tokens/s & Memória de pico (GB) \\
+\midrule
+Base (fp32)            & & \\
++ fp16 e GradScaler    & & \\
++ FlashAttention (SDPA)& & \\
++ AdamW fused          & & \\
++ torch.compile        & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Vanilla vs.\ MoE}
+% Curvas de loss de treino/validação (Fig.); perplexidade e BPB finais.
+% Comparação por parâmetros ativos vs. por parâmetros totais.
+
+\subsection{Utilização dos especialistas}
+% Utilização ao longo do treino (há colapso?).
+% Que tokens cada especialista recebe: funcionais, números, citações
+% (AUTOR, ano), pontuação.
+% Especialização por área (sigla_centro).
+
+\subsection{Modificação escolhida}
+% Treino 4 vs. vanilla.
+
+\subsection{Amostras geradas}
+% Prompts: ``Nos últimos anos,'', ``Este trabalho tem como objetivo'',
+% ``No contexto brasileiro,''.
+
+\section{Discussão}\label{sec:discussao}
+% Retomar H1--H5. Explicar por que funcionou ou não. Cautela com
+% diferenças pequenas (uma semente por configuração).
+
+\section{Limitações e Ameaças à Validade}\label{sec:limitacoes}
+% Escala reduzida, uma semente, uma época, GPU T4 (sem bf16), corpus
+% de domínio único.
+
+\section{Conclusão}\label{sec:conclusao}
+% Resposta à pergunta central; trabalhos futuros.
+
+\bibliographystyle{sbc}
+\bibliography{references}
+
+\end{document}

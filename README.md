@@ -2,7 +2,7 @@
 
 GPT-2 trained from scratch on Portuguese academic text, for the Large Language Models course of the Graduate Program in Computer Science (PPGCC) at the Federal University of Campina Grande (UFCG).
 
-The central question is: **what does a Mixture of Experts (MoE) gain over a dense model at the same scale and with the same token budget?** Starting from the GPT-2 implemented in Sebastian Raschka's *Build a Large Language Model (From Scratch)*, the project optimizes the training pipeline and compares the dense vanilla model against two MoE variants and one additional architecture change. Every model is trained for one epoch (~27M tokens) on the introductions of 23,026 UFCG academic works.
+The central question is: **what does a Mixture of Experts (MoE) gain over a dense model at the same scale and with the same token budget?** Starting from the GPT-2 implemented in Sebastian Raschka's [*Build a Large Language Model (From Scratch)*](https://www.manning.com/books/build-a-large-language-model-from-scratch) ([code](https://github.com/rasbt/LLMs-from-scratch)), the project optimizes the training pipeline and compares the dense vanilla model against two MoE variants and one additional architecture change. Every model is trained for one epoch (~27M tokens) on the introductions of 23,026 UFCG academic works.
 
 ## Experiments
 
@@ -50,11 +50,3 @@ See [`configs/base.yaml`](configs/base.yaml).
 | MoE (same active params) | — |
 | MoE (same total params) | — |
 | Run 4 | — |
-
-## References
-
-1. Raschka, S. [*Build a Large Language Model (From Scratch).*](https://www.manning.com/books/build-a-large-language-model-from-scratch) Manning, 2024. Code: [rasbt/LLMs-from-scratch](https://github.com/rasbt/LLMs-from-scratch).
-2. Radford, A. et al. [*Language Models are Unsupervised Multitask Learners.*](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) OpenAI, 2019.
-3. Shazeer, N. et al. [*Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer.*](https://arxiv.org/abs/1701.06538) ICLR, 2017.
-4. Fedus, W.; Zoph, B.; Shazeer, N. [*Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity.*](https://arxiv.org/abs/2101.03961) JMLR, 2022.
-5. Dao, T. et al. [*FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness.*](https://arxiv.org/abs/2205.14135) NeurIPS, 2022.
