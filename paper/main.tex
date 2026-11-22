@@ -171,6 +171,22 @@ Base (fp32)            & & \\
 \section{Conclusão}\label{sec:conclusao}
 % Resposta à pergunta central; trabalhos futuros.
 
+\section*{Uso de Ferramentas de Inteligência Artificial}
+% Manter atualizada até a entrega final. Revisar cada item antes de submeter.
+Este trabalho utilizou o assistente Claude (Anthropic), via Claude Code, nas
+seguintes atividades: (i)~planejamento do cronograma a partir do enunciado;
+(ii)~geração de rascunhos de código para o loop de treino (warmup, cosine decay,
+gradient clipping, checkpoint e retomada), para a atenção com
+\texttt{scaled\_dot\_product\_attention} e para as medições de desempenho;
+(iii)~criação do esqueleto deste artigo no modelo SBC e de entradas
+bibliográficas iniciais; e (iv)~explicações conceituais sobre as técnicas
+empregadas. Todo o código foi revisado, executado e validado pelo autor (por
+exemplo, a equivalência numérica da atenção com SDPA em relação à implementação
+do livro), e todas as referências foram conferidas nas fontes originais. Os
+números reportados vêm exclusivamente dos logs versionados no repositório; a
+ferramenta não foi usada para gerar ou alterar resultados. O autor assume
+integral responsabilidade pelo conteúdo, pelas análises e pelas conclusões.
+
 \bibliographystyle{sbc}
 \bibliography{references}
 
